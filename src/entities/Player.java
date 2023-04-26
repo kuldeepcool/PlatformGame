@@ -1,7 +1,7 @@
 package entities;
 
 import static utilz.Constants.PlayerConstants.*;
-import static utilz.HelpMethods.canMoveHere;
+import static utilz.HelpMethods.*;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
@@ -94,33 +94,29 @@ public class Player extends Entity {
 	private void updatePosition() {
 
 		moving = false;
-		if (!left && !right)
+		if (!left && !right && !inAir)
 			return;
 
 		float xSpeed = 0;
-		float ySpeed = 0;
 
-		if (left && !right)
-			xSpeed = -playerSpeed;
+		if (left)
+			xSpeed -= playerSpeed;
 
-		else if (right && !left)
-			xSpeed = playerSpeed;
+		if (right)
+			xSpeed += playerSpeed;
 
-		if (up && !down)
-			ySpeed = -playerSpeed;
+		if (inAir) {
 
-		else if (down && !up)
-			ySpeed = playerSpeed;
+		} else {
+			updateXPos(xSpeed);
+		}
+	}
 
-//		if (canMoveHere(x + xSpeed, y + ySpeed, width, height, levelData)) {
-//			this.x += xSpeed;
-//			this.y += ySpeed;
-//			moving = true;
-//		}
-		if (canMoveHere(hitbox.x + xSpeed, hitbox.y + ySpeed, hitbox.width, hitbox.height, levelData)) {
+	private void updateXPos(float xSpeed) {
+		if (canMoveHere(hitbox.x + xSpeed, hitbox.y, hitbox.width, hitbox.height, levelData)) {
 			hitbox.x += xSpeed;
-			hitbox.y += ySpeed;
-			moving = true;
+		} else {
+			hitbox.x = GetEntityPosNextToWall(hitbox, xSpeed);
 		}
 	}
 
