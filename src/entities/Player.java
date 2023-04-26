@@ -79,6 +79,13 @@ public class Player extends Entity {
 			playerAction = RUNNING;
 		else
 			playerAction = IDLE;
+
+		if (inAir) {
+			if (airSpeed < 0)
+				playerAction = JUMP;
+			else
+				playerAction = FALLING;
+		}
 		if (attacking)
 			playerAction = ATTACK_1;
 		if (startAnimation != playerAction) {
@@ -106,6 +113,9 @@ public class Player extends Entity {
 
 		if (right)
 			xSpeed += playerSpeed;
+		if (!inAir)
+			if (!isEntityOnFloor(hitbox, levelData))
+				inAir = true;
 
 		if (inAir) {
 			if (canMoveHere(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, levelData)) {
@@ -201,6 +211,11 @@ public class Player extends Entity {
 
 	public void setDown(boolean down) {
 		this.down = down;
+	}
+
+	public void setJump(boolean jump) {
+		this.jump = jump;
+
 	}
 
 }
