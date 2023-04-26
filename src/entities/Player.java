@@ -29,7 +29,7 @@ public class Player extends Entity {
 	// Jumping ,Gravity, Fall
 	private float airSpeed = 0f;
 	private float gravity = 0.04f * Game.SCALE;
-	private float jumpSpeed = 2.25f * Game.SCALE;
+	private float jumpSpeed = -2.25f * Game.SCALE;
 	private float fallSpeedAfterCollision = 0.5f * Game.SCALE;
 	private boolean inAir = false;
 
@@ -94,6 +94,8 @@ public class Player extends Entity {
 	private void updatePosition() {
 
 		moving = false;
+		if (jump)
+			jump();
 		if (!left && !right && !inAir)
 			return;
 
@@ -106,10 +108,35 @@ public class Player extends Entity {
 			xSpeed += playerSpeed;
 
 		if (inAir) {
+			if (canMoveHere(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, levelData)) {
+				hitbox.y += airSpeed;
+				airSpeed += gravity;
+				updateXPos(xSpeed);
+			} else {
+				hitbox.y = GetEntityPosUnderRoofOrAboveFloor(hitbox, airSpeed);
+				if (airSpeed > 0)
+					resetInAir();
+				else
+					airSpeed = fallSpeedAfterCollision;
+				updateXPos(xSpeed);
+			}
 
-		} else {
+		} else
 			updateXPos(xSpeed);
-		}
+		moving = true;
+
+	}
+
+	private void jump() {
+		if (inAir)
+			return;
+		inAir = true;
+		airSpeed = jumpSpeed;
+	}
+
+	private void resetInAir() {
+		inAir = false;
+		airSpeed = 0;
 	}
 
 	private void updateXPos(float xSpeed) {
