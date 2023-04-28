@@ -33,10 +33,11 @@ public class SoundButton extends PauseButton {
 	}
 
 	public void update() {
-		if (muted)
-			rowIndex = 1;
-		else
-			rowIndex = 0;
+		rowIndex = muted ? 1 : 0;
+//		if (muted)
+//			rowIndex = 1;
+//		else
+//			rowIndex = 0;
 
 		colIndex = 0;
 		if (mouseOver)
