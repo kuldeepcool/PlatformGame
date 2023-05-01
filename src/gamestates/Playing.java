@@ -1,5 +1,6 @@
 package gamestates;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
@@ -8,6 +9,7 @@ import entities.Player;
 import levels.LevelManager;
 import main.Game;
 import ui.PauseOverlay;
+import utilz.LoadSave;
 
 public class Playing extends State implements Statemethods {
 
@@ -16,6 +18,13 @@ public class Playing extends State implements Statemethods {
 	private PauseOverlay pauseOverlay;
 
 	private boolean paused = false;
+
+	private int xLevelOffset;
+	private int leftBorder = (int) (0.2 * Game.GAME_WIDTH);
+	private int rightBorder = (int) (0.8 * Game.GAME_WIDTH);
+	private int levelTilesWide = LoadSave.GetLevelData()[0].length;
+	private int maxTilesOffset = levelTilesWide - Game.TILES_IN_WIDTH;
+	private int maxLevelOffsetX = maxTilesOffset * Game.TILES_SIZE; // converted to pixels
 
 	public Playing(Game game) {
 
@@ -35,16 +44,35 @@ public class Playing extends State implements Statemethods {
 		if (!paused) {
 			levelManager.update();
 			player.update();
+			checkCloseToBorder();
 		} else
 			pauseOverlay.update();
 	}
 
+	private void checkCloseToBorder() {
+
+		int playerX = (int) player.getHitBox().x;
+		int diff = playerX - xLevelOffset;
+
+		if (diff > rightBorder)
+			xLevelOffset += diff - rightBorder;
+		else if (diff < leftBorder)
+			xLevelOffset += diff - leftBorder;
+		if (xLevelOffset > maxLevelOffsetX)
+			xLevelOffset = maxLevelOffsetX;
+		else if (xLevelOffset < 0)
+			xLevelOffset = 0;
+	}
+
 	@Override
 	public void draw(Graphics g) {
-		levelManager.draw(g);
-		player.render(g);
-		if (paused)
+		levelManager.draw(g, xLevelOffset);
+		player.render(g, xLevelOffset);
+		if (paused) {
+			g.setColor(new Color(0, 0, 0, 200));
+			g.fillRect(0, 0, Game.GAME_WIDTH, Game.GAME_HEIGHT);
 			pauseOverlay.draw(g);
+		}
 	}
 
 	@Override
