@@ -8,6 +8,18 @@ import inputs.MouseInputs;
 import static main.Game.GAME_WIDTH;
 import static main.Game.GAME_HEIGHT;;
 
+//Display Gif
+//private Image gifImage;
+//URL gifURL = getClass().getResource("/menu_background.gif");
+//gifImage = Toolkit.getDefaultToolkit().createImage(gifURL);
+//int imageWidth = gifImage.getWidth(this);
+//int imageHeight = gifImage.getHeight(this);
+//float scaleX = (float) GAME_WIDTH / imageWidth;
+//float scaleY = (float) GAME_HEIGHT / imageHeight;
+//int scaledWidth = (int) (imageWidth * scaleX);
+//int scaledHeight = (int) (imageHeight * scaleY);
+//g.drawImage(gifImage, 0, 0, scaledWidth, scaledHeight, null);
+
 public class GamePanel extends JPanel {
 
 	private MouseInputs mouseInputs;
