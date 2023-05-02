@@ -21,10 +21,10 @@ public abstract class Entity {
 
 	}
 
-	protected void drawHitBox(Graphics g) {
+	protected void drawHitBox(Graphics g, int xLevelOffset) {
 		// for debugging hit-box
 		g.setColor(Color.PINK);
-		g.drawRect((int) hitbox.x, (int) hitbox.y, (int) hitbox.width, (int) hitbox.height);
+		g.drawRect((int) (hitbox.x - xLevelOffset), (int) hitbox.y, (int) hitbox.width, (int) hitbox.height);
 	}
 
 	protected void initHitBox(float x, float y, int width, int height) {
