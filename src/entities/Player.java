@@ -119,11 +119,11 @@ public class Player extends Entity {
 		if (right)
 			xSpeed += playerSpeed;
 		if (!inAir)
-			if (!isEntityOnFloor(hitbox, levelData))
+			if (!IsEntityOnFloor(hitbox, levelData))
 				inAir = true;
 
 		if (inAir) {
-			if (canMoveHere(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, levelData)) {
+			if (CanMoveHere(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, levelData)) {
 				hitbox.y += airSpeed;
 				airSpeed += gravity;
 				updateXPos(xSpeed);
@@ -155,7 +155,7 @@ public class Player extends Entity {
 	}
 
 	private void updateXPos(float xSpeed) {
-		if (canMoveHere(hitbox.x + xSpeed, hitbox.y, hitbox.width, hitbox.height, levelData)) {
+		if (CanMoveHere(hitbox.x + xSpeed, hitbox.y, hitbox.width, hitbox.height, levelData)) {
 			hitbox.x += xSpeed;
 		} else {
 			hitbox.x = GetEntityPosNextToWall(hitbox, xSpeed);
@@ -176,7 +176,7 @@ public class Player extends Entity {
 
 	public void loadLevelData(int[][] levelData) {
 		this.levelData = levelData;
-		if (!isEntityOnFloor(hitbox, levelData))
+		if (!IsEntityOnFloor(hitbox, levelData))
 			inAir = true;
 	}
 
