@@ -30,6 +30,7 @@ public class Game implements Runnable {
 		initClasses();
 		gamePanel = new GamePanel(this);
 		new GameWindow(gamePanel);
+		gamePanel.setFocusable(true);
 		gamePanel.requestFocus();
 
 		startGameLoop();
