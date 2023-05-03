@@ -349,6 +349,8 @@ public class Player extends Entity {
 		currentHealth = maxHealth;
 		hitbox.x = x;
 		hitbox.y = y;
+		attackBox.x = x;
+		attackBox.y = y;
 
 	}
 
