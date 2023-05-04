@@ -292,4 +292,8 @@ public class Playing extends State implements Statemethods {
 		this.levelCompleted = levelCompleted;
 	}
 
+	public LevelManager getLevelManager() {
+		return levelManager;
+	}
+
 }
