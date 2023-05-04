@@ -20,6 +20,9 @@ public class Player extends Entity {
 	// Store Image Series for animations
 	private BufferedImage[][] animations;
 
+	// Status Bar UI
+	private BufferedImage statusBarImg;
+
 	// Level Data
 	private int[][] levelData;
 
@@ -36,9 +39,6 @@ public class Player extends Entity {
 	// Hit-Box
 	private float xDrawOffset = 21 * Game.SCALE;
 	private float yDrawOffset = 4 * Game.SCALE;
-
-	// Status Bar UI
-	private BufferedImage statusBarImg;
 
 	private int statusBarWidth = (int) (192 * Game.SCALE);
 	private int statusBarHeight = (int) (58 * Game.SCALE);
@@ -64,7 +64,7 @@ public class Player extends Entity {
 		this.playing = playing;
 		this.state = IDLE;
 		this.maxHealth = 100;
-		this.currentHealth = maxHealth;
+		this.currentHealth = 35;
 		this.walkSpeed = Game.SCALE * 1.0f;
 		loadAnimations();
 		initHitBox(20, 27);
@@ -93,10 +93,17 @@ public class Player extends Entity {
 
 		updateAttackBox();
 		updatePosition();
+		if (moving)
+			checkPotionTouched();
 		if (attacking)
 			checkAttack();
 		updateAnimationTick();
 		setAnimation();
+
+	}
+
+	private void checkPotionTouched() {
+		playing.checkPotionTouched(hitbox);
 	}
 
 	private void checkAttack() {
@@ -104,6 +111,7 @@ public class Player extends Entity {
 			return;
 		attackChecked = true;
 		playing.checkEnemyHit(attackBox);
+		playing.checkObjectHit(attackBox);
 
 	}
 
@@ -254,6 +262,11 @@ public class Player extends Entity {
 		} else {
 			hitbox.x = GetEntityPosNextToWall(hitbox, xSpeed);
 		}
+	}
+
+	public void changePower(int bluePotionValue) {
+		// TODO :add power bar
+		System.out.println("Added Power");
 	}
 
 	public void changeHealth(int value) {
