@@ -93,13 +93,19 @@ public class Player extends Entity {
 
 		updateAttackBox();
 		updatePosition();
-		if (moving)
+		if (moving) {
 			checkPotionTouched();
+			checkSpikesTouched();
+		}
 		if (attacking)
 			checkAttack();
 		updateAnimationTick();
 		setAnimation();
 
+	}
+
+	private void checkSpikesTouched() {
+		playing.checkSpikesTouched(this);
 	}
 
 	private void checkPotionTouched() {
@@ -277,6 +283,10 @@ public class Player extends Entity {
 			// gameOver();
 		} else if (currentHealth >= maxHealth)
 			currentHealth = maxHealth;
+	}
+
+	public void kill() {
+		currentHealth = 0;
 	}
 
 	private void loadAnimations() {
