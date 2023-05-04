@@ -11,18 +11,16 @@ import main.Game;
 
 public class Crabby extends Enemy {
 
-	// Attack Box
-	private Rectangle2D.Float attackBox;
 	private int attackBoxOffsetX;
 
 	public Crabby(float x, float y) {
 		super(x, y, CRABBY_WIDTH, CRABBY_HEIGHT, CRABBY);
-		initHitBox(x, y, (int) (22 * Game.SCALE), (int) (19 * Game.SCALE));
+		initHitBox(22, 19);
 		initAttackBox();
 	}
 
 	private void initAttackBox() {
-		attackBox = new Rectangle2D.Float(x, y, (int) (82 * Game.SCALE), (int) (19 * Game.SCALE));
+		this.attackBox = new Rectangle2D.Float(x, y, (int) (82 * Game.SCALE), (int) (19 * Game.SCALE));
 		attackBoxOffsetX = (int) (Game.SCALE * 30);
 	}
 
@@ -48,7 +46,7 @@ public class Crabby extends Enemy {
 			updateInAir(levelData);
 
 		else
-			switch (enemyState) {
+			switch (state) {
 			case IDLE:
 				newState(RUNNING);
 				break;
@@ -69,12 +67,6 @@ public class Crabby extends Enemy {
 			case HIT:
 				break;
 			}
-	}
-
-	public void drawAttackBox(Graphics g, int xLevelOffset) {
-		g.setColor(Color.red);
-		g.drawRect((int) (attackBox.x - xLevelOffset), (int) attackBox.y, (int) attackBox.width,
-				(int) attackBox.height);
 	}
 
 	public int flipX() {

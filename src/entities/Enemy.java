@@ -2,6 +2,8 @@ package entities;
 
 import static utilz.Constants.EnemyConstants.*;
 import static utilz.HelpMethods.*;
+import static utilz.Constants.GRAVITY;
+import static utilz.Constants.ANIMATION_SPEED;
 
 import java.awt.geom.Rectangle2D;
 
@@ -11,24 +13,13 @@ import main.Game;
 
 public abstract class Enemy extends Entity {
 
-	protected int enemyState;
 	protected int enemyType;
-	protected int animationIndex;
-	protected int animationTick;
-	protected int animationSpeed = 25;
 	protected int walkDir = LEFT;
 	protected int tileY;
 
 	protected float attackDistance = Game.TILES_SIZE;
-	protected float fallSpeed;
-	protected float gravity = 0.04f * Game.SCALE;
-	protected float walkSpeed = 0.35f * Game.SCALE;
 
 	protected boolean firstUpdate = true;
-	protected boolean inAir;
-
-	protected int maxHealth;
-	protected int currentHealth;
 
 	protected boolean active = true;
 
@@ -38,9 +29,9 @@ public abstract class Enemy extends Entity {
 
 		super(x, y, width, height);
 		this.enemyType = enemyType;
-		initHitBox(x, y, width, height);
-		maxHealth = GetmMaxHealth(enemyType);
-		currentHealth = maxHealth;
+		this.maxHealth = GetmMaxHealth(enemyType);
+		this.currentHealth = maxHealth;
+		this.walkSpeed = 0.35f * Game.SCALE;
 	}
 
 	protected void firstUpdateCheck(int[][] levelData) {
@@ -97,7 +88,7 @@ public abstract class Enemy extends Entity {
 	}
 
 	protected void newState(int enemyState) {
-		this.enemyState = enemyState;
+		this.state = enemyState;
 		animationTick = 0;
 		animationIndex = 0;
 	}
@@ -120,12 +111,12 @@ public abstract class Enemy extends Entity {
 
 	protected void updateInAir(int[][] levelData) {
 
-		if (CanMoveHere(hitbox.x, hitbox.y + fallSpeed, hitbox.width, hitbox.height, levelData)) {
-			hitbox.y += fallSpeed;
-			fallSpeed += gravity;
+		if (CanMoveHere(hitbox.x, hitbox.y + airSpeed, hitbox.width, hitbox.height, levelData)) {
+			hitbox.y += airSpeed;
+			airSpeed += GRAVITY;
 		} else {
 			inAir = false;
-			hitbox.y = GetEntityPosUnderRoofOrAboveFloor(hitbox, fallSpeed);
+			hitbox.y = GetEntityPosUnderRoofOrAboveFloor(hitbox, airSpeed);
 			tileY = (int) (hitbox.y / Game.TILES_SIZE);
 		}
 	}
@@ -133,13 +124,13 @@ public abstract class Enemy extends Entity {
 	protected void updateAnimationTick() {
 
 		animationTick++;
-		if (animationTick >= animationSpeed) {
+		if (animationTick >= ANIMATION_SPEED) {
 			animationTick = 0;
 			animationIndex++;
-			if (animationIndex >= GetSpriteAmount(enemyType, enemyState)) {
+			if (animationIndex >= GetSpriteAmount(enemyType, state)) {
 				animationIndex = 0;
-				switch (enemyState) {
-				case ATTACK, HIT -> enemyState = IDLE;
+				switch (state) {
+				case ATTACK, HIT -> state = IDLE;
 
 				case DEAD -> active = false;
 				}
@@ -162,15 +153,7 @@ public abstract class Enemy extends Entity {
 		currentHealth = maxHealth;
 		newState(IDLE);
 		active = true;
-		fallSpeed = 0;
-	}
-
-	public int getAnimationIndex() {
-		return animationIndex;
-	}
-
-	public int getEnemyState() {
-		return enemyState;
+		airSpeed = 0;
 	}
 
 	public boolean isActive() {
