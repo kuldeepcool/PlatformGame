@@ -8,18 +8,23 @@ import java.util.ArrayList;
 import entities.Player;
 import gamestates.Playing;
 import levels.Level;
+import main.Game;
 import utilz.LoadSave;
 import static utilz.Constants.ObjectConstants.*;
+import static utilz.HelpMethods.CanCannonSeePlayer;;
 
 public class ObjectManager {
 
 	private Playing playing;
 	private BufferedImage[][] potionImages;
 	private BufferedImage[][] containerImages;
+	private BufferedImage[] cannonImages;
 	private BufferedImage spikeImage;
+
 	private ArrayList<Potion> potions;
 	private ArrayList<GameContainer> containers;
 	private ArrayList<Spike> spikes;
+	private ArrayList<Cannon> cannons;
 
 	public ObjectManager(Playing playing) {
 		this.playing = playing;
@@ -85,15 +90,22 @@ public class ObjectManager {
 
 		// Spikes
 		spikeImage = LoadSave.GetSpriteAtlas(LoadSave.TRAP_ATLAS);
+
+		// Cannons
+		BufferedImage cannonSprite = LoadSave.GetSpriteAtlas(LoadSave.CANNON_ATLAS);
+		cannonImages = new BufferedImage[7];
+		for (int i = 0; i < cannonImages.length; ++i)
+			cannonImages[i] = cannonSprite.getSubimage(i * 40, 0, 40, 26);
 	}
 
 	public void loadObjects(Level newLevel) {
 		potions = new ArrayList<>(newLevel.getPotions());
 		containers = new ArrayList<>(newLevel.getContainers());
 		spikes = newLevel.getSpikes();
+		cannons = newLevel.getCannons();
 	}
 
-	public void update() {
+	public void update(int[][] levelData, Player player) {
 		for (Potion p : potions)
 			if (p.isActive())
 				p.update();
@@ -101,12 +113,69 @@ public class ObjectManager {
 		for (GameContainer gc : containers)
 			if (gc.isActive())
 				gc.update();
+
+		updateCannons(levelData, player);
+	}
+
+	private boolean isPlayerInRange(Cannon c, Player player) {
+		int absValue = (int) Math.abs(player.getHitBox().x - c.getHitbox().x);
+		return absValue <= Game.TILES_SIZE * 5;
+	}
+
+	private boolean isPlayerInFrontOfCannon(Cannon c, Player player) {
+		if (c.getObjectType() == CANNON_LEFT) {
+			if (c.getHitbox().x > player.getHitBox().x)
+				return true;
+
+		} else if (c.getHitbox().x < player.getHitBox().x)
+			return true;
+		return false;
+	}
+
+	private void updateCannons(int[][] levelData, Player player) {
+
+		// if cannon not animating
+		// -if in same tileY
+		// --if player in range
+		// ---is player in front of cannon
+		// ----check LOS
+		// -----shoot
+		for (Cannon c : cannons) {
+			if (!c.doAnimation)
+				if (c.getTileY() == player.getTileY())
+					if (isPlayerInRange(c, player))
+						if (isPlayerInFrontOfCannon(c, player))
+							if (CanCannonSeePlayer(levelData, player.getHitBox(), c.getHitbox(), c.getTileY()))
+								shootCannon(c);
+			c.update();
+		}
+
+	}
+
+	private void shootCannon(Cannon c) {
+		c.setAnimation(true);
+
 	}
 
 	public void draw(Graphics g, int xLevelOffset) {
 		drawPotions(g, xLevelOffset);
 		drawContainers(g, xLevelOffset);
 		drawTraps(g, xLevelOffset);
+		drawCannons(g, xLevelOffset);
+	}
+
+	private void drawCannons(Graphics g, int xLevelOffset) {
+		for (Cannon c : cannons) {
+
+			int x = (int) (c.getHitbox().x - xLevelOffset);
+			int width = CANNON_WIDTH;
+			if (c.getObjectType() == CANNON_RIGHT) {
+				x += width;
+				width *= -1;
+			}
+			g.drawImage(cannonImages[c.getAnimationIndex()], x, (int) (c.getHitbox().y), width, CANNON_HEIGHT, null);
+		}
+
 	}
 
 	private void drawTraps(Graphics g, int xLevelOffset) {
@@ -150,6 +219,9 @@ public class ObjectManager {
 
 		for (GameContainer gc : containers)
 			gc.reset();
+
+		for (Cannon c : cannons)
+			c.reset();
 
 	}
 

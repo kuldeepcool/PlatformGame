@@ -40,7 +40,8 @@ public class GameObject {
 				if (objectType == BARREL || objectType == BOX) {
 					doAnimation = false;
 					active = false;
-				}
+				} else if (objectType == CANNON_LEFT || objectType == CANNON_RIGHT)
+					doAnimation = false;
 			}
 		}
 	}
@@ -50,7 +51,7 @@ public class GameObject {
 		animationTick = 0;
 		active = true;
 
-		if (objectType == BARREL || objectType == BOX)
+		if (objectType == BARREL || objectType == BOX || objectType == CANNON_LEFT || objectType == CANNON_RIGHT)
 			doAnimation = false;
 		else
 			doAnimation = true;

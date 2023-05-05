@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import entities.Crabby;
 import main.Game;
+import objects.Cannon;
 import objects.GameContainer;
 import objects.Potion;
 import objects.Spike;
@@ -89,21 +90,41 @@ public class HelpMethods {
 			return IsSolid(hitbox.x + xSpeed, hitbox.y + hitbox.height + 1, levelData);
 	}
 
-	public static boolean IsAllTilesWalkable(int xStart, int xEnd, int y, int[][] levelData) {
-		for (int i = 0; i < xEnd - xStart; ++i) {
+	public static boolean CanCannonSeePlayer(int[][] levelData, Rectangle2D.Float playerHitBox,
+			Rectangle2D.Float cannonHitbox, int tileY) {
+
+		int firstTileX = (int) (playerHitBox.x / Game.TILES_SIZE);
+		int secondTileX = (int) (cannonHitbox.x / Game.TILES_SIZE);
+
+		if (firstTileX > secondTileX)
+			return IsAllTilesClear(secondTileX, firstTileX, tileY, levelData);
+
+		else
+			return IsAllTilesClear(firstTileX, secondTileX, tileY, levelData);
+
+	}
+
+	public static boolean IsAllTilesClear(int xStart, int xEnd, int y, int[][] levelData) {
+		for (int i = 0; i < xEnd - xStart; ++i)
 			if (IsTileSolid(xStart + i, y, levelData))
 				return false;
-			if (!IsTileSolid(xStart + i, y + 1, levelData))
-				return false;
-		}
 		return true;
 	}
 
-	public static boolean IsSightClear(int[][] levelData, Rectangle2D.Float firstHitbox, Rectangle2D.Float secondHitbox,
+	public static boolean IsAllTilesWalkable(int xStart, int xEnd, int y, int[][] levelData) {
+
+		if (IsAllTilesClear(xStart, xEnd, y, levelData))
+			for (int i = 0; i < xEnd - xStart; ++i)
+				if (!IsTileSolid(xStart + i, y + 1, levelData))
+					return false;
+		return true;
+	}
+
+	public static boolean IsSightClear(int[][] levelData, Rectangle2D.Float enemyHitbox, Rectangle2D.Float playerHitbox,
 			int tileY) {
 
-		int firstTileX = (int) (firstHitbox.x / Game.TILES_SIZE);
-		int secondTileX = (int) (secondHitbox.x / Game.TILES_SIZE);
+		int firstTileX = (int) (enemyHitbox.x / Game.TILES_SIZE);
+		int secondTileX = (int) (playerHitbox.x / Game.TILES_SIZE);
 
 		if (firstTileX > secondTileX)
 			return IsAllTilesWalkable(secondTileX, firstTileX, tileY, levelData);
@@ -166,6 +187,20 @@ public class HelpMethods {
 				int value = color.getBlue();
 				if (value == BARREL || value == BOX)
 					list.add(new GameContainer(i * Game.TILES_SIZE, j * Game.TILES_SIZE, value));
+
+			}
+		return list;
+	}
+
+	public static ArrayList<Cannon> GetCannons(BufferedImage img) {
+		ArrayList<Cannon> list = new ArrayList<>();
+
+		for (int j = 0; j < img.getHeight(); ++j)
+			for (int i = 0; i < img.getWidth(); ++i) {
+				Color color = new Color(img.getRGB(i, j));
+				int value = color.getBlue();
+				if (value == CANNON_LEFT || value == CANNON_RIGHT)
+					list.add(new Cannon(i * Game.TILES_SIZE, j * Game.TILES_SIZE, value));
 
 			}
 		return list;
