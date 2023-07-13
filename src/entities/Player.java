@@ -14,6 +14,7 @@ import java.awt.image.BufferedImage;
 import gamestates.Playing;
 import main.Game;
 import utilz.LoadSave;
+import audio.AudioPlayer;
 
 public class Player extends Entity {
 
@@ -96,8 +97,12 @@ public class Player extends Entity {
 				animationTick = 0;
 				animationIndex = 0;
 				playing.setPlayerDying(true);
-			} else if (animationIndex == GetSpriteAmount(DEAD) - 1 && animationTick >= ANIMATION_SPEED - 1)
+				playing.getGame().getAudioPlayer().playEffect(AudioPlayer.DIE);
+			} else if (animationIndex == GetSpriteAmount(DEAD) - 1 && animationTick >= ANIMATION_SPEED - 1) {
 				playing.setGameOver(true);
+				playing.getGame().getAudioPlayer().stopSong();
+				playing.getGame().getAudioPlayer().playEffect(AudioPlayer.GAMEOVER);
+			}
 
 			else
 				updateAnimationTick();
@@ -133,6 +138,7 @@ public class Player extends Entity {
 		attackChecked = true;
 		playing.checkEnemyHit(attackBox);
 		playing.checkObjectHit(attackBox);
+		playing.getGame().getAudioPlayer().playAttackSound();
 
 	}
 
@@ -268,6 +274,7 @@ public class Player extends Entity {
 	private void jump() {
 		if (inAir)
 			return;
+		playing.getGame().getAudioPlayer().playEffect(AudioPlayer.JUMP);
 		inAir = true;
 		airSpeed = jumpSpeed;
 	}
